@@ -28,6 +28,13 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2' // LocalDate 처리를 위해 필수!
+
+    // Oracle JDBC Driver (ojdbc)
+    implementation 'com.oracle.database.jdbc:ojdbc11:21.9.0.0' // 자바 11~17에 적합
+    // HikariCP (커넥션 풀)
+    implementation 'com.zaxxer:HikariCP:5.0.1'
+
     implementation 'javax.servlet:jstl:1.2'
 
 }
