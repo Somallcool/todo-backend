@@ -56,8 +56,22 @@ public class TodoListController extends HttpServlet {
             return;
         }
 
+    // 수정
+        if ("modify".equals(mode)) {
+            try {
+                TodoDTO todoDTO = objectMapper.readValue(req.getReader(), TodoDTO.class);
+                new TodoDAO().update(todoDTO);
+                resp.getWriter().write("{\"result\":\"modified\"}");
+            } catch (Exception e) {
+                e.printStackTrace();
+                resp.setStatus(500);
+                resp.getWriter().write("{\"result\":\"fail\"}");
+            }
+            return;
+        }
+
     // 현재 상태 업데이트
-        if ("update".equals(mode)) {
+        if ("updateFinished".equals(mode)) {
             Long tno = Long.parseLong(req.getParameter("tno"));
             boolean finished = Boolean.parseBoolean(req.getParameter("finished"));
             new TodoDAO().updateFinished(tno, finished);

@@ -35,6 +35,7 @@ public class TodoDAO {
         return list;
     }
 
+    // 등록
     public void insert(TodoDTO todoDTO) {
         String sql = "insert into tbl_todo(tno, title, dueDate, finished) values(todo_seq.nextval,?,?,?)";
 
@@ -51,6 +52,7 @@ public class TodoDAO {
         }
     }
 
+    // 삭제
     public void delete(Long tno) {
         String sql = "delete from tbl_todo where tno = ?";
 
@@ -64,6 +66,22 @@ public class TodoDAO {
         }
     }
 
+    public void update(TodoDTO dto) throws Exception{
+        String sql = "update tbl_todo set title =?, dueDate = ?, finished = ? where tno =?";
+
+        try (Connection connection = ConnectionUtil.INSTANCE.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, dto.getTitle());
+            preparedStatement.setDate(2, java.sql.Date.valueOf(dto.getDueDate()));
+            preparedStatement.setBoolean(3, dto.isFinished());
+            preparedStatement.setLong(4, dto.getTno());
+
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    // 현재 상태 업데이트
     public void updateFinished(Long tno, boolean finished) {
         String sql = "update tbl_todo set finished = ? where tno = ?";
 
