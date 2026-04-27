@@ -2,6 +2,7 @@ package com.zerock.ajaxconnectorweb.dao;
 
 import com.zerock.ajaxconnectorweb.dto.TodoDTO;
 import com.zerock.ajaxconnectorweb.util.ConnectionUtil;
+import oracle.jdbc.proxy.annotation.Pre;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,6 +45,18 @@ public class TodoDAO {
             preparedStatement.setDate(2, java.sql.Date.valueOf(todoDTO.getDueDate()));
             preparedStatement.setBoolean(3, todoDTO.isFinished());
 
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void delete(Long tno) {
+        String sql = "delete from tbl_todo where tno = ?";
+
+        try (Connection connection = ConnectionUtil.INSTANCE.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+
+            preparedStatement.setLong(1, tno);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

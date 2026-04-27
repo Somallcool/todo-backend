@@ -47,6 +47,15 @@ public class TodoListController extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         objectMapper.registerModule(new JavaTimeModule());
 
+        String mode = req.getParameter("mode");
+
+        if ("delete".equals(mode)) {
+            Long tno = Long.parseLong(req.getParameter("tno"));
+            new TodoDAO().delete(tno);
+            resp.getWriter().write("{\"result\":\"deleted\"}");
+            return;
+        }
+
         try {
             TodoDTO todoDTO = objectMapper.readValue(req.getReader(), TodoDTO.class);
             System.out.println("리액트에서 온 데이터: " + todoDTO);
