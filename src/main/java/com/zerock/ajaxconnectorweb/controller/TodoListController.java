@@ -48,11 +48,20 @@ public class TodoListController extends HttpServlet {
         objectMapper.registerModule(new JavaTimeModule());
 
         String mode = req.getParameter("mode");
-
+    // 삭제
         if ("delete".equals(mode)) {
             Long tno = Long.parseLong(req.getParameter("tno"));
             new TodoDAO().delete(tno);
             resp.getWriter().write("{\"result\":\"deleted\"}");
+            return;
+        }
+
+    // 현재 상태 업데이트
+        if ("update".equals(mode)) {
+            Long tno = Long.parseLong(req.getParameter("tno"));
+            boolean finished = Boolean.parseBoolean(req.getParameter("finished"));
+            new TodoDAO().updateFinished(tno, finished);
+            resp.getWriter().write("{\"result\":\"updated\"}");
             return;
         }
 

@@ -50,13 +50,28 @@ public class TodoDAO {
             throw new RuntimeException(e);
         }
     }
+
     public void delete(Long tno) {
         String sql = "delete from tbl_todo where tno = ?";
 
         try (Connection connection = ConnectionUtil.INSTANCE.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setLong(1, tno);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void updateFinished(Long tno, boolean finished) {
+        String sql = "update tbl_todo set finished = ? where tno = ?";
+
+        try (Connection connection = ConnectionUtil.INSTANCE.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setBoolean(1, finished);
+            preparedStatement.setLong(2, tno);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
