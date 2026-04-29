@@ -1,55 +1,28 @@
 package com.zerock.ajaxconnectorweb.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TodoDTO {
-    private Long tno;           // 할 일 번호
-    private String title;       // 할 일 제목
-    private LocalDate dueDate;  // 마감 기한
-    private boolean finished;   // 완료 여부
+    private Long tno;
 
-    public TodoDTO() {}
+    private String title;
 
-    public TodoDTO(Long tno, String title, LocalDate dueDate, boolean finished) {
-        this.tno = tno;
-        this.title = title;
-        this.dueDate = dueDate;
-        this.finished = finished;
-    }
+    private String content;   // 할 일 상세 내용 (새로 추가)
 
-    public Long getTno() {
-        return tno;
-    }
-    public String getTitle() {
-        return title;
-    }
-    public LocalDate getDueDate() {
-        return dueDate;
-    }
-    public boolean isFinished() {
-        return finished;
-    }
+    private LocalDate dueDate;
 
-    public void setTno(Long tno) {
-        this.tno = tno;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
-    }
-    public void setFinished(boolean finished) {
-        this.finished = finished;
-    }
+    private boolean finished;
 
-    @Override
-    public String toString() {
-        return "TodoDTO{" +
-                "tno=" + tno +
-                ", title='" + title + '\'' +
-                ", dueDate=" + dueDate +
-                ", finished=" + finished +
-                '}';
-    }
+    private int priority;     // 우선순위: 1(낮음), 2(보통), 3(높음) (새로 추가)
+
+    private String category;  // 카테고리: 업무, 운동, 공부 등 (새로 추가)
 }
