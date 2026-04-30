@@ -2,7 +2,6 @@ package com.zerock.ajaxconnectorweb.dao;
 
 import com.zerock.ajaxconnectorweb.dto.TodoDTO;
 import com.zerock.ajaxconnectorweb.util.ConnectionUtil;
-import oracle.jdbc.proxy.annotation.Pre;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,8 +21,18 @@ public class TodoDAO {
         pstmt.setString(6, dto.getCategory());
     }
 
-    public List<TodoDTO> selectAll() throws SQLException {
-        String sql = "select * from tbl_todo order by tno desc";
+    public List<TodoDTO> selectAll(String sortType) throws SQLException {
+        String orderBy = "order by tno desc";
+
+        if ("dueDate".equals(sortType)) {
+            // 마감일 임박순
+            orderBy = "order by dueDate ASC, tno DESC";
+        } else if ("priority".equals(sortType)) {
+            // 우선순위 높은순
+            orderBy = "order by priority DESC, tno DESC";
+        }
+
+        String sql = "select * from tbl_todo " + orderBy;
         List<TodoDTO> list = new ArrayList<>();
 
         try (

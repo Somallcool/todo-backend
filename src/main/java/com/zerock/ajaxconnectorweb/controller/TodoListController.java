@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.zerock.ajaxconnectorweb.dao.TodoDAO;
 import com.zerock.ajaxconnectorweb.dto.TodoDTO;
+import com.zerock.ajaxconnectorweb.service.TodoService;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -30,9 +31,11 @@ public class TodoListController extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json; charset=UTF-8");
 
+        String sortType = req.getParameter("sort");
+
         try {
-            TodoDAO dao = new TodoDAO();
-            List<TodoDTO> todolist = dao.selectAll();
+//            TodoDAO dao = new TodoDAO();
+            List<TodoDTO> todolist = TodoService.INSTANCE.getList(sortType);
 
             // writeValueAsString: 이 자바 객체를 JSON 문자열로 써줘
             String jsonStr = objectMapper.writeValueAsString(todolist);
@@ -45,22 +48,29 @@ public class TodoListController extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        objectMapper.registerModule(new JavaTimeModule());
+//        init()에서 등록해서 불필요함.
+//        objectMapper.registerModule(new JavaTimeModule());
 
         String mode = req.getParameter("mode");
-    // 삭제
+        // 삭제
         if ("delete".equals(mode)) {
-            Long tno = Long.parseLong(req.getParameter("tno"));
-            new TodoDAO().delete(tno);
-            resp.getWriter().write("{\"result\":\"deleted\"}");
+            try {
+                Long tno = Long.parseLong(req.getParameter("tno"));
+                TodoService.INSTANCE.remove(tno);
+                resp.getWriter().write("{\"result\":\"deleted\"}");
+            } catch (Exception e) {
+                e.printStackTrace(); // 서버 콘솔에 에러 출력
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500 에러 설정
+                resp.getWriter().write("{\"result\":\"fail\", \"message\":\"" + e.getMessage() + "\"}");
+            }
             return;
         }
 
-    // 수정
+        // 수정
         if ("modify".equals(mode)) {
             try {
                 TodoDTO todoDTO = objectMapper.readValue(req.getReader(), TodoDTO.class);
-                new TodoDAO().update(todoDTO);
+                TodoService.INSTANCE.modify(todoDTO);
                 resp.getWriter().write("{\"result\":\"modified\"}");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -70,20 +80,21 @@ public class TodoListController extends HttpServlet {
             return;
         }
 
-    // 현재 상태 업데이트
+        // 완료 상태 업데이트
         if ("updateFinished".equals(mode)) {
             Long tno = Long.parseLong(req.getParameter("tno"));
             boolean finished = Boolean.parseBoolean(req.getParameter("finished"));
-            new TodoDAO().updateFinished(tno, finished);
+            TodoService.INSTANCE.updateFinished(tno, finished);
             resp.getWriter().write("{\"result\":\"updated\"}");
             return;
         }
 
+        // 등록 로직 (기본)
         try {
             TodoDTO todoDTO = objectMapper.readValue(req.getReader(), TodoDTO.class);
             System.out.println("리액트에서 온 데이터: " + todoDTO);
 
-            new TodoDAO().insert(todoDTO);
+            TodoService.INSTANCE.register(todoDTO);
 
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.getWriter().write("{\"result\":\"success\"}");
