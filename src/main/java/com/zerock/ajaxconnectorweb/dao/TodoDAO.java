@@ -2,6 +2,7 @@ package com.zerock.ajaxconnectorweb.dao;
 
 import com.zerock.ajaxconnectorweb.dto.TodoDTO;
 import com.zerock.ajaxconnectorweb.util.ConnectionUtil;
+import oracle.jdbc.proxy.annotation.Pre;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,12 +46,12 @@ public class TodoDAO {
                 Connection connection = ConnectionUtil.INSTANCE.getConnection();
                 PreparedStatement pstmt = connection.prepareStatement(sql.toString());
         ) {
-            // [수정 포인트 1] SQL에 '?'가 있다면 값을 채워줘야 합니다.
+            // [수정 1] SQL에 '?'가 있다면 값을 채워줘야한다.
             if (hasKeyword) {
                 pstmt.setString(1, "%" + keyword + "%");
             }
 
-            // [수정 포인트 2] 파라미터 세팅 후에 executeQuery()를 호출합니다.
+            // [수정 2] 파라미터 세팅 후에 executeQuery()를 호출.
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     TodoDTO dto = TodoDTO.builder()
@@ -97,6 +98,27 @@ public class TodoDAO {
         }
     }
 
+    // 선택 삭제/완료 삭제
+    public void deleteSelected(String nos) throws SQLException {
+        String sql = "delete from tbl_todo where tno in (" + nos + ")";
+
+        try (Connection connection = ConnectionUtil.INSTANCE.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    // 테이블 내 모든 데이터 삭제
+    public void deleteAll() throws SQLException {
+        String sql = "delete from tbl_todo";
+
+        try (Connection connection = ConnectionUtil.INSTANCE.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    // 수정
     public void update(TodoDTO dto) throws Exception {
         String sql = "update tbl_todo set title = ?, content = ?, dueDate = ?, finished = ?, " +
                 "priority = ?, category = ? where tno = ?";

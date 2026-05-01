@@ -53,52 +53,73 @@ public class TodoListController extends HttpServlet {
 //        objectMapper.registerModule(new JavaTimeModule());
 
         String mode = req.getParameter("mode");
-        // 삭제
-        if ("delete".equals(mode)) {
-            try {
-                Long tno = Long.parseLong(req.getParameter("tno"));
-                TodoService.INSTANCE.remove(tno);
-                resp.getWriter().write("{\"result\":\"deleted\"}");
-            } catch (Exception e) {
-                e.printStackTrace(); // 서버 콘솔에 에러 출력
-                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500 에러 설정
-                resp.getWriter().write("{\"result\":\"fail\", \"message\":\"" + e.getMessage() + "\"}");
-            }
-            return;
-        }
 
-        // 수정
-        if ("modify".equals(mode)) {
+        try {
+            // 삭제
+            if ("delete".equals(mode)) {
+                try {
+                    Long tno = Long.parseLong(req.getParameter("tno"));
+                    TodoService.INSTANCE.remove(tno);
+                    resp.getWriter().write("{\"result\":\"deleted\"}");
+                } catch (Exception e) {
+                    e.printStackTrace(); // 서버 콘솔에 에러 출력
+                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500 에러 설정
+                    resp.getWriter().write("{\"result\":\"fail\", \"message\":\"" + e.getMessage() + "\"}");
+                }
+                return;
+            }
+
+            if ("deleteSelected".equals(mode)) {
+                String nos = req.getParameter("nos");
+                if (nos != null && !nos.isEmpty()) {
+                    TodoService.INSTANCE.removeSelected(nos);
+                }
+                resp.getWriter().write("{\"result\":\"success\"}");
+                return;
+            }
+
+            if ("deleteAll".equals(mode)) {
+                TodoService.INSTANCE.removeAll();
+                resp.getWriter().write("{\"result\":\"success\"}");
+                return;
+            }
+
+            // 수정
+            if ("modify".equals(mode)) {
+                try {
+                    TodoDTO todoDTO = objectMapper.readValue(req.getReader(), TodoDTO.class);
+                    TodoService.INSTANCE.modify(todoDTO);
+                    resp.getWriter().write("{\"result\":\"modified\"}");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    resp.setStatus(500);
+                    resp.getWriter().write("{\"result\":\"fail\"}");
+                }
+                return;
+            }
+
+            // 완료 상태 업데이트
+            if ("updateFinished".equals(mode)) {
+                Long tno = Long.parseLong(req.getParameter("tno"));
+                boolean finished = Boolean.parseBoolean(req.getParameter("finished"));
+                TodoService.INSTANCE.updateFinished(tno, finished);
+                resp.getWriter().write("{\"result\":\"updated\"}");
+                return;
+            }
+
+            // 등록 로직 (기본)
             try {
                 TodoDTO todoDTO = objectMapper.readValue(req.getReader(), TodoDTO.class);
-                TodoService.INSTANCE.modify(todoDTO);
-                resp.getWriter().write("{\"result\":\"modified\"}");
+                System.out.println("리액트에서 온 데이터: " + todoDTO);
+
+                TodoService.INSTANCE.register(todoDTO);
+
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().write("{\"result\":\"success\"}");
             } catch (Exception e) {
                 e.printStackTrace();
-                resp.setStatus(500);
-                resp.getWriter().write("{\"result\":\"fail\"}");
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
-            return;
-        }
-
-        // 완료 상태 업데이트
-        if ("updateFinished".equals(mode)) {
-            Long tno = Long.parseLong(req.getParameter("tno"));
-            boolean finished = Boolean.parseBoolean(req.getParameter("finished"));
-            TodoService.INSTANCE.updateFinished(tno, finished);
-            resp.getWriter().write("{\"result\":\"updated\"}");
-            return;
-        }
-
-        // 등록 로직 (기본)
-        try {
-            TodoDTO todoDTO = objectMapper.readValue(req.getReader(), TodoDTO.class);
-            System.out.println("리액트에서 온 데이터: " + todoDTO);
-
-            TodoService.INSTANCE.register(todoDTO);
-
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.getWriter().write("{\"result\":\"success\"}");
         } catch (Exception e) {
             e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

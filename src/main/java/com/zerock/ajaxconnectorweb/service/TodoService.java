@@ -57,6 +57,14 @@ public enum TodoService {
         dao.delete(tno);
     }
 
+    public void removeSelected(String nos) throws SQLException {
+        dao.deleteSelected(nos);
+    }
+
+    public void removeAll() throws SQLException {
+        dao.deleteAll();
+    }
+
     // 완료 상태 업데이트
     public void updateFinished(Long tno, boolean finished) {
         log.info("Service: updateFinished 샐행 중...");
