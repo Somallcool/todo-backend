@@ -21,9 +21,9 @@ public enum TodoService {
     }
 
     // 목록 불러오기
-    public List<TodoDTO> getList(String sortType) throws SQLException {
+    public List<TodoDTO> getList(String sortType, String keyword) throws SQLException {
         log.info("Service: getList 실행 중...");
-        return dao.selectAll(sortType);
+        return dao.selectAll(sortType, keyword);
     }
 
     // 등록 (유효성 검사 로직)

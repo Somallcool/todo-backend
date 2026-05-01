@@ -32,10 +32,11 @@ public class TodoListController extends HttpServlet {
         resp.setContentType("application/json; charset=UTF-8");
 
         String sortType = req.getParameter("sort");
+        String keyword = req.getParameter("keyword");
 
         try {
 //            TodoDAO dao = new TodoDAO();
-            List<TodoDTO> todolist = TodoService.INSTANCE.getList(sortType);
+            List<TodoDTO> todolist = TodoService.INSTANCE.getList(sortType, keyword);
 
             // writeValueAsString: 이 자바 객체를 JSON 문자열로 써줘
             String jsonStr = objectMapper.writeValueAsString(todolist);

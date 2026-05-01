@@ -21,37 +21,49 @@ public class TodoDAO {
         pstmt.setString(6, dto.getCategory());
     }
 
-    public List<TodoDTO> selectAll(String sortType) throws SQLException {
+    public List<TodoDTO> selectAll(String sortType, String keyword) throws SQLException {
         String orderBy = "order by tno desc";
 
         if ("dueDate".equals(sortType)) {
-            // 마감일 임박순
             orderBy = "order by dueDate ASC, tno DESC";
         } else if ("priority".equals(sortType)) {
-            // 우선순위 높은순
             orderBy = "order by priority DESC, tno DESC";
         }
 
-        String sql = "select * from tbl_todo " + orderBy;
+        StringBuilder sql = new StringBuilder("select * from tbl_todo ");
+
+        // 검색어 존재 여부 확인
+        boolean hasKeyword = (keyword != null && !keyword.trim().isEmpty());
+        if (hasKeyword) {
+            sql.append("where title like ? ");
+        }
+        sql.append(orderBy);
+
         List<TodoDTO> list = new ArrayList<>();
 
         try (
                 Connection connection = ConnectionUtil.INSTANCE.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql);
-                ResultSet rs = pstmt.executeQuery();
+                PreparedStatement pstmt = connection.prepareStatement(sql.toString());
         ) {
-            while (rs.next()) {
-                // Lombok의 @Builder를 쓰거나 기본 생성자 사용
-                TodoDTO dto = TodoDTO.builder()
-                        .tno(rs.getLong("tno"))
-                        .title(rs.getString("title"))
-                        .content(rs.getString("content")) // 추가
-                        .dueDate(rs.getDate("dueDate").toLocalDate())
-                        .finished(rs.getBoolean("finished"))
-                        .priority(rs.getInt("priority"))   // 추가
-                        .category(rs.getString("category")) // 추가
-                        .build();
-                list.add(dto);
+            // [수정 포인트 1] SQL에 '?'가 있다면 값을 채워줘야 합니다.
+            if (hasKeyword) {
+                pstmt.setString(1, "%" + keyword + "%");
+            }
+
+            // [수정 포인트 2] 파라미터 세팅 후에 executeQuery()를 호출합니다.
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    TodoDTO dto = TodoDTO.builder()
+                            .tno(rs.getLong("tno"))
+                            .title(rs.getString("title"))
+                            .content(rs.getString("content"))
+                            .dueDate(rs.getDate("dueDate").toLocalDate())
+                            .finished(rs.getBoolean("finished"))
+                            .priority(rs.getInt("priority"))
+                            .category(rs.getString("category"))
+                            .build();
+                    list.add(dto);
+                }
             }
         }
         return list;
