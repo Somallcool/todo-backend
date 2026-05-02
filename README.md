@@ -1,4 +1,4 @@
-# 📑 Today Todo Management System (TTMS/Back-end)
+# 📑 Today's Work (Back-end)
 이 프로젝트는 **Java Servlet과 Oracle DB**를 기반으로 구축된 **오늘의 할 일을 체크**하는 할 일 관리 API 서버입니다. **RESTful** 설계 원칙을 준수하며, **리액트** 기반 프론트엔드와 **비동기 통신**을 통해 **실시간 데이터 처리**를 수행합니다.
 
 ## 🔗 관련 링크
