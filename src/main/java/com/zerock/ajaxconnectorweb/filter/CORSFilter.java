@@ -44,7 +44,8 @@ public class CORSFilter implements Filter {
 
         // [Allow-Origin] "누구에게 허용할 것인가?"
         // 리액트 개발 서버(http://localhost:5173)에서 오는 요청만 내 데이터를 가져가게 허락합니다.
-        resp.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+//        resp.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+        resp.setHeader("Access-Control-Allow-Origin", "*");
 
         // [Allow-Methods] "어떤 동작을 허용할 것인가?"
         // 데이터 조회(GET), 등록(POST), 수정(PUT), 삭제(DELETE) 등 모든 방식을 허용합니다.
@@ -57,7 +58,7 @@ public class CORSFilter implements Filter {
 
         // [Allow-Credentials] "쿠키나 인증 정보를 주고받을 것인가?"
         // 나중에 로그인을 구현하여 세션이나 쿠키를 사용할 때 이 설정이 'true'여야 정보가 전달됩니다.
-        resp.setHeader("Access-Control-Allow-Credentials", "true");
+//        resp.setHeader("Access-Control-Allow-Credentials", "true");
 
 
         // --- [3. 다음 단계로 진행: "검문 통과"] ---

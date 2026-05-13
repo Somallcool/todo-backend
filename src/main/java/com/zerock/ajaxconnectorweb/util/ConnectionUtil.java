@@ -14,9 +14,9 @@ public enum ConnectionUtil {
 
     ConnectionUtil() {
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName("oracle.jdbc.OracleDriver");
-        config.setJdbcUrl("jdbc:oracle:thin:@localhost:1521:xe");
-        config.setUsername("web");
+        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        config.setJdbcUrl("jdbc:mysql://localhost:3306/tododb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8");
+        config.setUsername("root");
         config.setPassword("1234");
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");

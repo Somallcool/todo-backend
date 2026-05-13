@@ -83,8 +83,8 @@ public class TodoDAO {
      * [등록 기능] 신규 할 일 추가
      */
     public void insert(TodoDTO todoDTO) {
-        String sql = "insert into tbl_todo(tno, title, content, dueDate, finished, priority, category) " +
-                "values(todo_seq.nextval, ?, ?, ?, ?, ?, ?)";
+        String sql = "insert into tbl_todo(title, content, dueDate, finished, priority, category) " +
+                "values(?, ?, ?, ?, ?, ?)";
         try (Connection connection = ConnectionUtil.INSTANCE.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
 

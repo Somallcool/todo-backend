@@ -31,7 +31,10 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2' // LocalDate 처리를 위해 필수!
 
     // Oracle JDBC Driver (ojdbc)
-    implementation 'com.oracle.database.jdbc:ojdbc11:21.9.0.0' // 자바 11~17에 적합
+//    implementation 'com.oracle.database.jdbc:ojdbc11:21.9.0.0' // 자바 11~17에 적합
+    // MySQL로 변경하기
+    implementation 'mysql:mysql-connector-java:8.0.33'
+
     // HikariCP (커넥션 풀)
     implementation 'com.zaxxer:HikariCP:5.0.1'
 
@@ -49,4 +52,8 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+war {
+    archiveFileName = 'ROOT.war'
 }
